@@ -16,7 +16,7 @@ public class LandController {
     private LandService landService;
 
     @PostMapping("/reigsterexistingland")
-    public ResponseEntity<StandardResponse> registerLand(@RequestBody Land land){
+    public ResponseEntity<StandardResponse> registerExistingLand(@RequestBody Land land){
         return landService.registerExistingLand(land);
     }
 

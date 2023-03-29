@@ -44,6 +44,7 @@ public class CropService {
         try {
             Farm farm = farmRepository.findById(farmId).get();
             farm.getCropsList().add(marketCrop);
+            cropRepository.save(marketCrop);
             return StandardResponse.sendHttpResponse(true, "Successful");
         } catch (Exception e) {
             return StandardResponse.sendHttpResponse(false, "Could not add crop to farm");

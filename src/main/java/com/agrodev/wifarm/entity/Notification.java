@@ -12,7 +12,7 @@ import java.util.Date;
 @Entity
 @RequiredArgsConstructor
 @Data
-public class Tasks {
+public class Notification {
     @Id
     @GeneratedValue
     private Long id;
@@ -21,5 +21,6 @@ public class Tasks {
     private String cropCategory;
     private String cropName;
     private String adminName;
+    private boolean hasRead;
     private LocalDateTime notificationTime;
 }
