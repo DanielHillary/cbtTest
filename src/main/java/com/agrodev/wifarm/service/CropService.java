@@ -1,6 +1,7 @@
 package com.agrodev.wifarm.service;
 
 import com.agrodev.wifarm.entity.*;
+import com.agrodev.wifarm.entity.Pojo.CropListRequest;
 import com.agrodev.wifarm.entity.Pojo.SellCropRequest;
 import com.agrodev.wifarm.repository.CropRepository;
 import com.agrodev.wifarm.repository.FarmRepository;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -51,6 +54,25 @@ public class CropService {
         }
     }
 
+    public ResponseEntity<StandardResponse> addCropsToFarm(CropListRequest cropsLists, Long farmId){
+        try {
+            Farm farm = farmRepository.findById(farmId).get();
+            List<Crops> cropsList = cropsLists.getCropsList();
+            for(Crops cr: cropsList){
+                for(Crops cc : farm.getCropsList()) {
+                    if (cr.getCropName().equalsIgnoreCase(cc.getCropName())){
+                        cc.setAmountPlanted(cc.getAmountPlanted() + cr.getAmountPlanted());
+                        cropsList.remove(cr);
+                    }
+                }
+            }
+            farm.getCropsList().addAll(cropsList);
+            return StandardResponse.sendHttpResponse(true, "Successful");
+        } catch (Exception e) {
+            return StandardResponse.sendHttpResponse(false, "Could not add crops to farm");
+        }
+    }
+
     public ResponseEntity<StandardResponse> tradeCrop(SellCropRequest request) {
         try {
             MarketCrops marketCrops = marketCropsRepo.findByCropName(request.getCropName()).get();
@@ -70,6 +92,16 @@ public class CropService {
             return StandardResponse.sendHttpResponse(true, "Successful");
         } catch (Exception e) {
             return StandardResponse.sendHttpResponse(false, "Could not put crop for trade");
+        }
+    }
+
+    public ResponseEntity<StandardResponse> getPlantedCrops(Long farmId) {
+        try {
+            Farm farm = farmRepository.findById(farmId).get();
+            List<Crops> cropsList = new ArrayList<>(farm.getCropsList());
+            return StandardResponse.sendHttpResponse(true, "Successful", cropsList);
+        } catch (Exception e) {
+            return StandardResponse.sendHttpResponse(false, "Could not get planted Crops");
         }
     }
 }

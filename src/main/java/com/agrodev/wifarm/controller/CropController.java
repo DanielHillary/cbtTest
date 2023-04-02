@@ -2,6 +2,7 @@ package com.agrodev.wifarm.controller;
 
 import com.agrodev.wifarm.entity.Crops;
 import com.agrodev.wifarm.entity.MarketCrops;
+import com.agrodev.wifarm.entity.Pojo.CropListRequest;
 import com.agrodev.wifarm.entity.Pojo.SellCropRequest;
 import com.agrodev.wifarm.entity.StandardResponse;
 import com.agrodev.wifarm.service.CropService;
@@ -19,6 +20,10 @@ public class CropController {
     public ResponseEntity<StandardResponse> addCrop(@RequestBody Crops crops, @RequestParam("farmId") Long farmId){
         return cropService.addCropToFarm(crops, farmId);
     }
+    @PostMapping("/addcropstofarm")
+    public ResponseEntity<StandardResponse> addCropsToFarm(@RequestBody CropListRequest request, @RequestParam("farmId") Long farmId){
+        return cropService.addCropsToFarm(request, farmId);
+    }
 
 
     @PostMapping("/addexistingcroptofarm")
@@ -29,5 +34,10 @@ public class CropController {
     @PostMapping("/tradecrop")
     public ResponseEntity<StandardResponse> tradeCrop(@RequestBody SellCropRequest request){
         return cropService.tradeCrop(request);
+    }
+
+    @GetMapping("/getplantedcrops")
+    public ResponseEntity<StandardResponse> getPlantedCrops(@RequestParam("farmId") Long farmId){
+        return cropService.getPlantedCrops(farmId);
     }
 }
