@@ -33,4 +33,15 @@ public class Crops {
     private double estimatedYeildRate;
     @ManyToMany(mappedBy = "cropsList")
     private List<Farm> farms;
+
+    public Crops (MarketCrops crops){
+        this.cropName = crops.getCropName();
+        this.cropCategory = crops.getCropCategory();
+        this.cropEstimatedDurationInDays = crops.getCropEstimatedDuration();
+        this.principalAmount = crops.getCropPrice();
+        this.accruedAmount = crops.getAccruedAmount();
+        this.estimatedYeildRate = crops.getLifeCycleYieldRate();
+        this.monthlyInterestRate = crops.getMonthlyInterestRate();
+        this.minSquareMeter = crops.getSquareMeters();
+    }
 }

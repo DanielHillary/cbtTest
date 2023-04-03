@@ -23,4 +23,26 @@ public class RoleController {
     public ResponseEntity<StandardResponse> getAllRoles(){
         return roleService.getAllRoles();
     }
+
+    @PutMapping("/updaterole")
+    public ResponseEntity<StandardResponse> updateRole(@RequestBody Role role){
+        return roleService.updateRole(role);
+    }
+    @PostMapping("/assignroletouser")
+    public ResponseEntity<StandardResponse> assignRoleToUser(@RequestParam("roleName") String roleName, @RequestParam("userId") Long userId){
+        return roleService.assignRoleToUser(roleName, userId);
+    }
+    @GetMapping("/getrole")
+    public ResponseEntity<StandardResponse> getRole(@RequestParam("id") Long id){
+        return roleService.getRole(id);
+    }
+    @DeleteMapping("/deleterole")
+    public ResponseEntity<StandardResponse> deleteRole(@RequestParam("id") Long id){
+        return roleService.deleteRole(id);
+    }
+    @DeleteMapping("/deleteallroles")
+    public ResponseEntity<StandardResponse> deleteAllRoles(){
+        return roleService.deleteAllRoles();
+    }
+
 }

@@ -11,5 +11,6 @@ import java.util.List;
 public class CropListRequest {
 
     private String reqId;
-    private List<Crops> cropsList;
+    private List<PlantCropRequest> cropsList;
+    private Long farmId;
 }

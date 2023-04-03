@@ -20,7 +20,7 @@ public class MarketCrops {
     private String cropName;
     private String cropId;
     private String primaryLocation;
-    private Double cropEstimatedDuration;
+    private Integer cropEstimatedDuration;
     private boolean isAvailablle;
     private boolean isPlanted;
     private Date datePlanted;

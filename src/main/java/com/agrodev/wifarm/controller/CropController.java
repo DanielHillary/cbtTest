@@ -21,8 +21,8 @@ public class CropController {
         return cropService.addCropToFarm(crops, farmId);
     }
     @PostMapping("/addcropstofarm")
-    public ResponseEntity<StandardResponse> addCropsToFarm(@RequestBody CropListRequest request, @RequestParam("farmId") Long farmId){
-        return cropService.addCropsToFarm(request, farmId);
+    public ResponseEntity<StandardResponse> addCropsToFarm(@RequestBody CropListRequest request){
+        return cropService.addCropsToFarm(request);
     }
 
 

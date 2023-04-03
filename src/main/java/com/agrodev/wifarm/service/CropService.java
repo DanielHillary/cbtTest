@@ -2,6 +2,7 @@ package com.agrodev.wifarm.service;
 
 import com.agrodev.wifarm.entity.*;
 import com.agrodev.wifarm.entity.Pojo.CropListRequest;
+import com.agrodev.wifarm.entity.Pojo.PlantCropRequest;
 import com.agrodev.wifarm.entity.Pojo.SellCropRequest;
 import com.agrodev.wifarm.repository.CropRepository;
 import com.agrodev.wifarm.repository.FarmRepository;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -54,10 +56,19 @@ public class CropService {
         }
     }
 
-    public ResponseEntity<StandardResponse> addCropsToFarm(CropListRequest cropsLists, Long farmId){
+    public ResponseEntity<StandardResponse> addCropsToFarm(CropListRequest cropsLists){
         try {
-            Farm farm = farmRepository.findById(farmId).get();
-            List<Crops> cropsList = cropsLists.getCropsList();
+            Farm farm = farmRepository.findById(cropsLists.getFarmId()).get();
+            List<MarketCrops> marketCropsList = new ArrayList<>();
+            List<Crops> cropsList = new ArrayList<>();
+
+            for(PlantCropRequest req : cropsLists.getCropsList()){
+                marketCropsList.add(marketCropsRepo.findById(req.getMarketCropId()).get());
+            }
+            for(MarketCrops mark : marketCropsList){
+                Crops crops  = new Crops(mark);
+                cropsList.add(crops);
+            }
             for(Crops cr: cropsList){
                 for(Crops cc : farm.getCropsList()) {
                     if (cr.getCropName().equalsIgnoreCase(cc.getCropName())){
