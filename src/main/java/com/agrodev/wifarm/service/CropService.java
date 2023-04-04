@@ -68,16 +68,19 @@ public class CropService {
             for(MarketCrops mark : marketCropsList){
                 Crops crops  = new Crops(mark);
                 cropsList.add(crops);
+
             }
             for(Crops cr: cropsList){
                 for(Crops cc : farm.getCropsList()) {
                     if (cr.getCropName().equalsIgnoreCase(cc.getCropName())){
                         cc.setAmountPlanted(cc.getAmountPlanted() + cr.getAmountPlanted());
                         cropsList.remove(cr);
+                        cropRepository.save(cc);
                     }
                 }
             }
-            farm.getCropsList().addAll(cropsList);
+
+            farm.getCropsList().addAll(cropRepository.saveAll(cropsList));
             return StandardResponse.sendHttpResponse(true, "Successful");
         } catch (Exception e) {
             return StandardResponse.sendHttpResponse(false, "Could not add crops to farm");
