@@ -8,5 +8,6 @@ import lombok.RequiredArgsConstructor;
 public class PlantCropRequest {
 
     private Long marketCropId;
-    private double quantityPlanted;
+    private String cropName;
+    private int quantityPlanted;
 }

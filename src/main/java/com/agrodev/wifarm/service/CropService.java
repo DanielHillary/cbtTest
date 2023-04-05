@@ -59,17 +59,26 @@ public class CropService {
     public ResponseEntity<StandardResponse> addCropsToFarm(CropListRequest cropsLists){
         try {
             Farm farm = farmRepository.findById(cropsLists.getFarmId()).get();
+            System.out.println("We got here");
             List<MarketCrops> marketCropsList = new ArrayList<>();
             List<Crops> cropsList = new ArrayList<>();
 
             for(PlantCropRequest req : cropsLists.getCropsList()){
                 marketCropsList.add(marketCropsRepo.findById(req.getMarketCropId()).get());
             }
+            System.out.println("We goot heerer etoo");
             for(MarketCrops mark : marketCropsList){
                 Crops crops  = new Crops(mark);
+                crops.setFarmId(cropsLists.getFarmId());
+                for(PlantCropRequest request : cropsLists.getCropsList()){
+                    if(request.getCropName().equalsIgnoreCase(crops.getCropName())){
+                        crops.setAmountPlanted(request.getQuantityPlanted());
+                    }
+                }
                 cropsList.add(crops);
 
             }
+            System.out.println("We we we");
             for(Crops cr: cropsList){
                 for(Crops cc : farm.getCropsList()) {
                     if (cr.getCropName().equalsIgnoreCase(cc.getCropName())){
@@ -79,10 +88,11 @@ public class CropService {
                     }
                 }
             }
-
+            System.out.println("What more can I say>");
             farm.getCropsList().addAll(cropRepository.saveAll(cropsList));
             return StandardResponse.sendHttpResponse(true, "Successful");
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return StandardResponse.sendHttpResponse(false, "Could not add crops to farm");
         }
     }

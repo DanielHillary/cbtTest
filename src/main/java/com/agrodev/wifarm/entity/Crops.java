@@ -43,5 +43,7 @@ public class Crops {
         this.estimatedYeildRate = crops.getLifeCycleYieldRate();
         this.monthlyInterestRate = crops.getMonthlyInterestRate();
         this.minSquareMeter = crops.getSquareMeters();
+        this.price = crops.getCropPrice();
     }
 }
+
