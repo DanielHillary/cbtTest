@@ -25,7 +25,6 @@ public class Farm {
     private double principalAmount;
     private double accuredAmount;
     private double estimatedYeildRate;
-
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(name = "FARM_CROPS",
             joinColumns = {

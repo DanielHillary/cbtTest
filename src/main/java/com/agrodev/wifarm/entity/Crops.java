@@ -17,6 +17,7 @@ public class Crops {
     private String cropCategory;
     private Long farmId;
     private String cropName;
+    private String userId;
     private Integer cropEstimatedDurationInDays;
     private Integer cropActualDuration;
     private Date plantDate;
@@ -25,25 +26,23 @@ public class Crops {
     private boolean isPlanted;
     private boolean isHarvested;
     private Double minSquareMeter;
-    private Double price;
+    private Double purchasePrice;
     private Date harvestDate;
     private double accruedAmount;
     private double principalAmount;
     private double monthlyInterestRate;
     private double estimatedYeildRate;
-    @ManyToMany(mappedBy = "cropsList")
-    private List<Farm> farms;
 
     public Crops (MarketCrops crops){
         this.cropName = crops.getCropName();
         this.cropCategory = crops.getCropCategory();
         this.cropEstimatedDurationInDays = crops.getCropEstimatedDuration();
-        this.principalAmount = crops.getCropPrice();
+        this.principalAmount = crops.getPrincipalAmount();
         this.accruedAmount = crops.getAccruedAmount();
         this.estimatedYeildRate = crops.getLifeCycleYieldRate();
         this.monthlyInterestRate = crops.getMonthlyInterestRate();
         this.minSquareMeter = crops.getSquareMeters();
-        this.price = crops.getCropPrice();
+        this.purchasePrice = crops.getCropPrice();
     }
 }
 

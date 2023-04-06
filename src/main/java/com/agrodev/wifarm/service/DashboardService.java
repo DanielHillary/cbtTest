@@ -40,8 +40,8 @@ public class DashboardService {
                 totalPrincipalAmount = totalPrincipalAmount + cr.getPrincipalAmount();
 
                 MarketCrops marketCrop = marketCropsRepo.findByCropName(cr.getCropName()).get();
-                double accruedPercent = Math.abs((marketCrop.getAccruedAmount()/cr.getPrice())*100)/100;
-                double amount = (cr.getAmountPlanted() * cr.getPrice())/accruedPercent;
+                double accruedPercent = Math.abs((marketCrop.getAccruedAmount()/cr.getPurchasePrice())*100)/100;
+                double amount = (cr.getAmountPlanted() * cr.getPurchasePrice())/accruedPercent;
                 accruedAmount = accruedAmount + amount;
 
                 daysToHarvest.add(cr.getCropEstimatedDurationInDays());

@@ -12,13 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
-public class CropService {
+public class
+CropService {
     @Autowired
     private CropRepository cropRepository;
     @Autowired
@@ -34,7 +32,7 @@ public class CropService {
             for(Crops cr : farm.getCropsList()){
                 if(cr.getCropName().equalsIgnoreCase(crops.getCropName())){
                     cr.setAmountPlanted(crops.getAmountPlanted());
-                    cr.setPrincipalAmount(cr.getPrincipalAmount() + (cr.getAmountPlanted() * cr.getPrice()));
+                    cr.setPrincipalAmount(cr.getPrincipalAmount() + (cr.getAmountPlanted() * cr.getPurchasePrice()));
                     cropRepository.save(cr);
                 }
             }
@@ -56,43 +54,52 @@ public class CropService {
         }
     }
 
-    public ResponseEntity<StandardResponse> addCropsToFarm(CropListRequest cropsLists){
+    public ResponseEntity<StandardResponse> addCropsToFarm(CropListRequest requestList){
         try {
-            Farm farm = farmRepository.findById(cropsLists.getFarmId()).get();
+            Farm farm = farmRepository.findById(requestList.getFarmId()).get();
             System.out.println("We got here");
             List<MarketCrops> marketCropsList = new ArrayList<>();
-            List<Crops> cropsList = new ArrayList<>();
-
-            for(PlantCropRequest req : cropsLists.getCropsList()){
+            Set<Crops> cropsSet = new HashSet<>();
+            for(PlantCropRequest req : requestList.getCropsList()){
                 marketCropsList.add(marketCropsRepo.findById(req.getMarketCropId()).get());
             }
-            System.out.println("We goot heerer etoo");
-            for(MarketCrops mark : marketCropsList){
-                Crops crops  = new Crops(mark);
-                crops.setFarmId(cropsLists.getFarmId());
-                for(PlantCropRequest request : cropsLists.getCropsList()){
-                    if(request.getCropName().equalsIgnoreCase(crops.getCropName())){
-                        crops.setAmountPlanted(request.getQuantityPlanted());
+            for(PlantCropRequest request : requestList.getCropsList()){
+                for(Crops crops : farm.getCropsList()) {
+                    if (request.getCropName().equalsIgnoreCase(crops.getCropName())){
+                        int planted = crops.getAmountPlanted() + request.getQuantityPlanted();
+                        cropRepository.updateQuantityPlanted(planted, crops.getCropId());
                     }
                 }
-                cropsList.add(crops);
+            }
+            System.out.println("We got here");
+            for(Crops crops : farm.getCropsList()){
+                for(MarketCrops marketCrops : marketCropsList){
+                    if(marketCrops.getCropName().equalsIgnoreCase(crops.getCropName())){
+                        marketCropsList.remove(marketCrops);
+                    }
+                }
+            }
+            if(!marketCropsList.isEmpty()) {
+                for (MarketCrops crops : marketCropsList) {
+                    Crops newCrops = new Crops(crops);
+                    newCrops.setFarmId(farm.getFarmId());
+                    newCrops.setUserId(farm.getCustomerId());
+                    for(PlantCropRequest request : requestList.getCropsList()){
+                        if(request.getCropName().equalsIgnoreCase(newCrops.getCropName())){
+                            newCrops.setAmountPlanted(request.getQuantityPlanted());
+                        }
+                    }
+                    cropsSet.add(cropRepository.save(newCrops));
+                }
+                farm.getCropsList().addAll(cropsSet);
 
+                return StandardResponse.sendHttpResponse(true, "Successful",farmRepository.save(farm).getCropsList());
+            }else{
+                return StandardResponse.sendHttpResponse(true, "Successful");
             }
-            System.out.println("We we we");
-            for(Crops cr: cropsList){
-                for(Crops cc : farm.getCropsList()) {
-                    if (cr.getCropName().equalsIgnoreCase(cc.getCropName())){
-                        cc.setAmountPlanted(cc.getAmountPlanted() + cr.getAmountPlanted());
-                        cropsList.remove(cr);
-                        cropRepository.save(cc);
-                    }
-                }
-            }
-            System.out.println("What more can I say>");
-            farm.getCropsList().addAll(cropRepository.saveAll(cropsList));
-            return StandardResponse.sendHttpResponse(true, "Successful");
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            System.out.println(e.getCause());
             return StandardResponse.sendHttpResponse(false, "Could not add crops to farm");
         }
     }

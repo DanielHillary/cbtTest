@@ -26,6 +26,7 @@ public class MarketCrops {
     private Date datePlanted;
     private Date harvestDate;
     private double cropPrice;
+    private double principalAmount;
     private double accruedAmount;
     private double squareMeters;
     private double dailyInterestRate;
