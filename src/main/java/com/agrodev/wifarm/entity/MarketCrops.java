@@ -19,9 +19,12 @@ public class MarketCrops {
     private String cropCategory;
     private String cropName;
     private String cropId;
-    private String primaryLocation;
+    private String primaryStateLocation;
+    private String primaryLGALocation;
+    private String primaryTownLocation;
     private Integer cropEstimatedDuration;
     private boolean isAvailablle;
+    private double amountAvailable;
     private boolean isPlanted;
     private Date datePlanted;
     private Date harvestDate;

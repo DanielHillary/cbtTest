@@ -20,6 +20,7 @@ public class Land {
     private String LGA;
     private String town;
     private double landUnits;
+    private double landSize;
     private Date purchaseDate;
     private Date leaseDate;
     private Date releaseDate;

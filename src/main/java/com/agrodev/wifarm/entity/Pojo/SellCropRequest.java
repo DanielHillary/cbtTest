@@ -14,5 +14,5 @@ public class SellCropRequest {
     private String LGA;
     private String cropId;
     private String sellerId;
-    private double amountToSell;
+    private int amountToSell;
 }

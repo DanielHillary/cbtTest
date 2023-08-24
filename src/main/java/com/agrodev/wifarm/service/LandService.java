@@ -23,7 +23,7 @@ public class LandService {
         try {
             List<Land> landList = landRepository.findByLandState(land.getLandState());
             for(Land l : landList){
-                if(l.getLGA().equalsIgnoreCase(land.getLGA())){
+                if(l.getTown().equalsIgnoreCase(land.getTown())){
                     l.setLandUnits(l.getLandUnits() + land.getLandUnits());
                     landRepository.save(l);
                 }

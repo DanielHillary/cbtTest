@@ -4,10 +4,7 @@ import com.agrodev.wifarm.entity.*;
 import com.agrodev.wifarm.entity.Pojo.CropListRequest;
 import com.agrodev.wifarm.entity.Pojo.PlantCropRequest;
 import com.agrodev.wifarm.entity.Pojo.SellCropRequest;
-import com.agrodev.wifarm.repository.CropRepository;
-import com.agrodev.wifarm.repository.FarmRepository;
-import com.agrodev.wifarm.repository.MarketCropsRepo;
-import com.agrodev.wifarm.repository.TradeCropsRepo;
+import com.agrodev.wifarm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +20,8 @@ CropService {
     private FarmRepository farmRepository;
     @Autowired
     private MarketCropsRepo marketCropsRepo;
+    @Autowired
+    private LandRepository landRepository;
     @Autowired
     private TradeCropsRepo tradeCropsRepo;
 
@@ -63,7 +62,15 @@ CropService {
             for(PlantCropRequest req : requestList.getCropsList()){
                 marketCropsList.add(marketCropsRepo.findById(req.getMarketCropId()).get());
             }
+
             for(PlantCropRequest request : requestList.getCropsList()){
+                MarketCrops mCrops = marketCropsRepo.findByCropName(request.getCropName()).get();
+                double farmSize = mCrops.getSquareMeters() * request.getQuantityPlanted();
+                Land land = landRepository.findByTown(mCrops.getPrimaryTownLocation()).get();
+//                land.setLandUnits(land.getLandUnits() - farmSize);
+//                landRepository.save(land);
+
+                landRepository.updateLandSize((land.getLandUnits() - farmSize), land.getLandId());
                 for(Crops crops : farm.getCropsList()) {
                     if (request.getCropName().equalsIgnoreCase(crops.getCropName())){
                         int planted = crops.getAmountPlanted() + request.getQuantityPlanted();
@@ -107,6 +114,22 @@ CropService {
     public ResponseEntity<StandardResponse> tradeCrop(SellCropRequest request) {
         try {
             MarketCrops marketCrops = marketCropsRepo.findByCropName(request.getCropName()).get();
+            Farm farm = farmRepository.findByCustomerId(request.getSellerId()).get();
+            for(Crops crops : farm.getCropsList()){
+                if(crops.getCropName().equalsIgnoreCase(request.getCropName())){
+                    if(Double.compare(request.getAmountToSell(), crops.getAmountPlanted()) == 0){
+                        farm.getCropsList().remove(crops);
+                        //pay the user immediately
+                    }else{
+//                        crops.setAmountPlanted(crops.getAmountPlanted() - request.getAmountToSell());
+//                        cropRepository.save(crops);
+                        cropRepository.updateQuantityPlanted((crops.getAmountPlanted()) - request.getAmountToSell(), crops.getCropId());
+                    }
+                }
+            }
+            farmRepository.save(farm);
+            MarketCrops mCrops = marketCropsRepo.findByCropName(request.getCropName()).get();
+            marketCropsRepo.updateCropsAvailable((mCrops.getAmountAvailable() + request.getAmountToSell()), mCrops.getId());
             TradeCrops crops = new TradeCrops();
             crops.setSellingPrice(
                     marketCrops.getCropPrice() + marketCrops.getAccruedAmount()
