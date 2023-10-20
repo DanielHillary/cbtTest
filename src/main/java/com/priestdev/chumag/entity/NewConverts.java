@@ -16,6 +16,7 @@ public class NewConverts {
     private Long id;
     private String firstName;
     private String lastName;
+    private String phoneNumber;
     private LocalDate dateOfConversion;
     private String conversionMonth;
     private String area;

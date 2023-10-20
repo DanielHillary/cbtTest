@@ -20,6 +20,7 @@ public class ZonalLeader {
     private String lastName;
     private String address;
     private String age;
+    private String phoneNumber;
     private LocalDate birthDay;
     private String email;
     private String zone;
