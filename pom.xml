@@ -8,11 +8,11 @@
         <version>2.7.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.agrodev</groupId>
-    <artifactId>WiFarm</artifactId>
+    <groupId>com.priestdev</groupId>
+    <artifactId>Chumag</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>WiFarm</name>
-    <description>Project for Farm management</description>
+    <name>Chumag</name>
+    <description>Project for Membership Management</description>
     <properties>
         <java.version>17</java.version>
     </properties>
