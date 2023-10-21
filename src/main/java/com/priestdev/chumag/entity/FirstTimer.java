@@ -18,6 +18,7 @@ public class FirstTimer {
     private Long id;
     private String firstName;
     private String lastName;
+    private String names;
     private String emailAddress;
     private String address;
     private String area;
