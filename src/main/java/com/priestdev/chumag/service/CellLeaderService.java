@@ -19,9 +19,9 @@ public class CellLeaderService {
     public ResponseEntity<StandardResponse> createCellLeader(CellLeader cellLeader) {
         try {
             CellLeader leader;
-            Optional<CellLeader> presentCell = cellLeaderRepo.findByEmail(cellLeader.getEmail());
+            Optional<CellLeader> presentCell = cellLeaderRepo.findByPhoneNumber(cellLeader.getPhoneNumber());
             if(presentCell.isPresent()){
-                return StandardResponse.sendHttpResponse(false, "User already exists");
+                return StandardResponse.sendHttpResponse(false, "Cell leader already already exists");
             }else {
                leader = cellLeaderRepo.save(cellLeader);
                 return StandardResponse.sendHttpResponse(true, "Successful", leader );

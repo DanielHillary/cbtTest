@@ -20,8 +20,16 @@ public class FirstTimerService {
         try {
             Optional<FirstTimer> firstTimerOptional = firstTimerRepo.findByPhoneNumber(firstTimer.getPhoneNumber());
             if(firstTimerOptional.isPresent()){
-                return StandardResponse.sendHttpResponse(false, "First timer already recorded");
+                String message = "";
+                FirstTimer fTimer = firstTimerOptional.get();
+                if(fTimer.getChurchAttendance() == 1){
+                    message = "This person has attended the church before. Kindly register as a second timer";
+                }else {
+                    message = "First timer already recorded.";
+                }
+                return StandardResponse.sendHttpResponse(false, message);
             }else {
+                firstTimer.setChurchAttendance(1);
                 return StandardResponse.sendHttpResponse(true, "Successful", firstTimerRepo.save(firstTimer));
             }
         } catch (Exception e) {

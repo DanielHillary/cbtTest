@@ -21,7 +21,8 @@ public class CellLeader {
     private String age;
     private LocalDate birthDay;
     private String email;
-    private String zone;
+    private Long zoneId;
+    private String zoneName;
     private String area;
     private String cellAddress;
     private boolean hasCompletedDCA;

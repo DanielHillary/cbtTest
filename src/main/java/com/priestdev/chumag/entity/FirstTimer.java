@@ -24,6 +24,7 @@ public class FirstTimer {
     private String area;
     private Long zoneId;
     private String zoneName;
+    private int churchAttendance;
     private String gender;
     private LocalDate birthDay;
     private String phoneNumber;

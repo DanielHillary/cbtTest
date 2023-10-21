@@ -11,5 +11,7 @@ import java.util.Optional;
 public interface CellLeaderRepo extends JpaRepository<CellLeader, Long> {
     Optional<CellLeader> findByEmail(String email);
 
+    Optional<CellLeader> findByPhoneNumber(String phoneNumber);
+
     List<CellLeader> findByZone(String zone);
 }
