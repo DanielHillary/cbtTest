@@ -30,8 +30,8 @@ public class CellLeaderController {
     }
 
     @GetMapping("/getcellleadersbyzone")
-    public ResponseEntity<StandardResponse> getCellLeadersByZone(@RequestParam("zone") String zone){
-        return cellLeaderService.getCellLeadersByZone(zone);
+    public ResponseEntity<StandardResponse> getCellLeadersByZone(@RequestParam("zoneId") Long zoneId){
+        return cellLeaderService.getCellLeadersByZone(zoneId);
     }
 
     @PutMapping("/updatecellleaderinfo")

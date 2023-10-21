@@ -43,7 +43,7 @@ public class CellLeaderService {
     public ResponseEntity<StandardResponse> getCellLeader(Long id){
         try {
 
-            return StandardResponse.sendHttpResponse(true, "Successful");
+            return StandardResponse.sendHttpResponse(true, "Successful", cellLeaderRepo.findById(id));
         } catch (Exception e) {
             return StandardResponse.sendHttpResponse(false, "Something went wrong");
         }
@@ -76,9 +76,9 @@ public class CellLeaderService {
         }
     }
 
-    public ResponseEntity<StandardResponse> getCellLeadersByZone(String zone) {
+    public ResponseEntity<StandardResponse> getCellLeadersByZone(Long zoneId) {
         try {
-            List<CellLeader> cellLeaders = cellLeaderRepo.findByZone(zone);
+            List<CellLeader> cellLeaders = cellLeaderRepo.findByZoneId(zoneId);
             return StandardResponse.sendHttpResponse(true, "Successful", cellLeaders);
         } catch (Exception e) {
             return StandardResponse.sendHttpResponse(false, "Could not get cell leaders by zone");

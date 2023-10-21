@@ -13,5 +13,7 @@ public interface CellLeaderRepo extends JpaRepository<CellLeader, Long> {
 
     Optional<CellLeader> findByPhoneNumber(String phoneNumber);
 
-    List<CellLeader> findByZone(String zone);
+    List<CellLeader> findByZoneName(String zone);
+
+    List<CellLeader> findByZoneId(Long zoneId);
 }
