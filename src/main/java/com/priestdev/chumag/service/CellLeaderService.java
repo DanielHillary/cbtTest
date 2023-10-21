@@ -34,7 +34,7 @@ public class CellLeaderService {
 
     public ResponseEntity<StandardResponse> getAllCellLeaders(){
         try {
-            return StandardResponse.sendHttpResponse(true, "Successful");
+            return StandardResponse.sendHttpResponse(true, "Successful", cellLeaderRepo.findAll());
         } catch (Exception e) {
             return StandardResponse.sendHttpResponse(false, "There was an error somewhere.");
         }

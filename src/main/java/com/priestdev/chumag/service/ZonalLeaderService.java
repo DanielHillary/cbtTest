@@ -17,7 +17,7 @@ public class ZonalLeaderService {
 
     public ResponseEntity<StandardResponse> createZonalLeader(ZonalLeader zonalLeader) {
         try {
-            return StandardResponse.sendHttpResponse(true, "Successfully created");
+            return StandardResponse.sendHttpResponse(true, "Successfully created", zonalLeaderRepo.save(zonalLeader));
         } catch (Exception e) {
             return StandardResponse.sendHttpResponse(false, "Could not create a zonal leader");
         }
