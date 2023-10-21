@@ -1,5 +1,6 @@
 package com.priestdev.chumag.service;
 
+import com.priestdev.chumag.entity.AdminUser;
 import com.priestdev.chumag.entity.Role;
 import com.priestdev.chumag.entity.StandardResponse;
 import com.priestdev.chumag.entity.User;
@@ -83,6 +84,15 @@ public class UserService {
                 adminRoles.add(adminRole);
                 adminUser.setRole(adminRoles);
                 userRepo.save(adminUser);
+
+                AdminUser user = new AdminUser();
+                user.setUserName("admin123");
+                user.setPassword(passwordEncoder.encode("admin@pass"));
+                user.setFirstName("AdminDan");
+                user.setLastName("Hillary");
+                user.setRole(adminRoles);
+                adminRepository.save(user);
+
             }
         }
 

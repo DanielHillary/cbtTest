@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDate;
 
 @Entity
 @RequiredArgsConstructor
@@ -20,18 +21,29 @@ public class FirstTimer {
     private String emailAddress;
     private String address;
     private String area;
-    private String zone;
+    private Long zoneId;
+    private String zoneName;
+    private String gender;
+    private LocalDate birthDay;
     private String phoneNumber;
-    private String cellAddress;
+    private String levelOfEducation;
+    private String badComments;
+    private String prayerRequest;
+    private Long cellId;
+    private String cellName;
+    private String occupation;
     private String ageRange;
+    private LocalDate firstVisitDate;
     private boolean forDCA;
     private boolean forShopForFree;
     private boolean forEncounter;
     private boolean forCareerSchool;
     private boolean forSportsAcademy;
+    private boolean movieAcademy;
+    private boolean centerForEducation;
     private boolean likedTheChurch;
-    private String comments;
     private boolean willReturnAgain;
     private String mostEnjoyedSession;
     private String howDidYouHearAboutUs;
+    private String whoInvitedYou;
 }

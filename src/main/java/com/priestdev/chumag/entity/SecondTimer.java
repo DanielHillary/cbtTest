@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDate;
 
 @Entity
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class SecondTimer {
     private String email;
     private String address;
     private String phoneNumber;
+    private LocalDate visitationDate;
     private String area;
     private String zone;
     private String cellAddress;
