@@ -19,7 +19,8 @@ public class NewConvertService {
         try {
             String month = newConverts.getDateOfConversion().getMonth().toString();
             newConverts.setConversionMonth(month);
-            return StandardResponse.sendHttpResponse(true, "Successful", newConverts);
+
+            return StandardResponse.sendHttpResponse(true, "Successful", newConvertRepo.save(newConverts));
         } catch (Exception e) {
             return StandardResponse.sendHttpResponse(false, "Could not add new convert");
         }

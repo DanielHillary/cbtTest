@@ -21,6 +21,8 @@ public class NewConverts {
     private String conversionMonth;
     private Long cellId;
     private String cellName;
+    private Long zoneId;
+    private String zoneName;
     private String area;
     private String zone;
     private String houseAddress;
