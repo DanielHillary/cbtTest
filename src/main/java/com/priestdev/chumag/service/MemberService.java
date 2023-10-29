@@ -1,18 +1,28 @@
 package com.priestdev.chumag.service;
 
-import com.priestdev.chumag.entity.Members;
-import com.priestdev.chumag.entity.StandardResponse;
+import com.priestdev.chumag.entity.*;
+import com.priestdev.chumag.entity.Pojo.CombinedMembers;
+import com.priestdev.chumag.repository.FirstTimerRepo;
 import com.priestdev.chumag.repository.MembersRepository;
+import com.priestdev.chumag.repository.NewConvertRepo;
+import com.priestdev.chumag.repository.SecondTimerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MemberService {
     @Autowired
     private MembersRepository membersRepository;
+    @Autowired
+    private FirstTimerRepo firstTimerRepo;
+    @Autowired
+    private SecondTimerRepo secondTimerRepo;
+    @Autowired
+    private NewConvertRepo newConvertRepo;
 
     public ResponseEntity<StandardResponse> registerNewMember(Members members) {
         try {
@@ -38,6 +48,25 @@ public class MemberService {
     public ResponseEntity<StandardResponse> getAllMembers() {
         try {
             return StandardResponse.sendHttpResponse(true, "Successful", membersRepository.findAll());
+        } catch (Exception e) {
+            return StandardResponse.sendHttpResponse(false,  "Could not retrieve all  members");
+        }
+    }
+
+    public ResponseEntity<StandardResponse> getAllCombinedMembers() {
+        try {
+            List<NewConverts> allNewConverts = newConvertRepo.findAll();
+            List<FirstTimer> allFirstTimers = firstTimerRepo.findAll();
+            List<SecondTimer> allSecondTimers = secondTimerRepo.findAll();
+
+            CombinedMembers combinedMembers = new CombinedMembers();
+
+            combinedMembers.setId(combinedMembers.getId() == 0 ? 1 : combinedMembers.getId() + 1);
+            combinedMembers.setAllFirstTimers(allFirstTimers);
+            combinedMembers.setAllNewConverts(allNewConverts);
+            combinedMembers.setAllSecondTimers(allSecondTimers);
+
+            return StandardResponse.sendHttpResponse(true, "Successful", combinedMembers);
         } catch (Exception e) {
             return StandardResponse.sendHttpResponse(false,  "Could not retrieve all  members");
         }

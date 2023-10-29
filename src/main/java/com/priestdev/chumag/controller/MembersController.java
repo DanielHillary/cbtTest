@@ -29,6 +29,11 @@ public class MembersController {
         return memberService.getAllMembers();
     }
 
+    @GetMapping("/getallcombinedmembers")
+    public ResponseEntity<StandardResponse> getAllCombinedMembers(){
+        return memberService.getAllCombinedMembers();
+    }
+
     @PutMapping("/updatememberinfo")
     public ResponseEntity<StandardResponse> updateMemberInfo(@RequestBody Members members){
         return memberService.updateMemberInfo(members);
