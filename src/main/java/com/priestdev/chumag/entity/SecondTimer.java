@@ -23,6 +23,8 @@ public class SecondTimer {
     private String phoneNumber;
     private LocalDate visitationDate;
     private String area;
+    private Long cellId;
+    private String cellName;
     private Long zoneId;
     private String zoneName;
     private String cellAddress;
