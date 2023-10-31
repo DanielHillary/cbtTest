@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NewConvertService {
@@ -19,8 +20,10 @@ public class NewConvertService {
         try {
             String month = newConverts.getDateOfConversion().getMonth().toString();
             newConverts.setConversionMonth(month);
-
-            return StandardResponse.sendHttpResponse(true, "Successful", newConvertRepo.save(newConverts));
+            Optional<NewConverts> newConverts1 = newConvertRepo.findByPhoneNumberAndFirstName(newConverts.getPhoneNumber(), newConverts.getFirstName());
+            if(newConverts1.isPresent()){
+                return StandardResponse.sendHttpResponse(false, "This person already exists in database");
+            } else return StandardResponse.sendHttpResponse(true, "Successful", newConvertRepo.save(newConverts));
         } catch (Exception e) {
             return StandardResponse.sendHttpResponse(false, "Could not add new convert");
         }

@@ -73,7 +73,7 @@ public class NotifyService {
             String message = "Your Verification OTP is : " + user.getVerificationOtp();
 
 
-            this.sendNotification( "emails/registration", "NOVA Registration", message , user , context);
+            this.sendNotification( "emails/registration", "CHUMAG Registration", message , user , context);
         } catch (MessagingException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -93,7 +93,7 @@ public class NotifyService {
             String message = "Your Password Reset OTP is : " + user.getVerificationOtp();
 
 
-            this.sendNotification( "emails/otp", "NOVA -- Password Reset", message, user , context);
+            this.sendNotification( "emails/otp", "CHUMAG -- Password Reset", message, user , context);
         } catch (MessagingException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -109,7 +109,7 @@ public class NotifyService {
 
             Context context = new Context();
             context.setVariable("user", user);
-            this.sendNotification( "emails/registration", "NOVA -- OTP", OTP, user , context);
+            this.sendNotification( "emails/registration", "CHUMAG -- OTP", OTP, user , context);
 
         } catch (MessagingException e) {
             System.out.println(e.getMessage());
@@ -129,7 +129,7 @@ public class NotifyService {
             String message = "Thank you for successful login " ;
 
 
-            this.sendNotification( "emails/registration", "NOVA Mobile App Login",message, user , context);
+            this.sendNotification( "emails/registration", "CHUMAG Mobile App Login",message, user , context);
         } catch (MessagingException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
