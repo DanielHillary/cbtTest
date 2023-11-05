@@ -22,6 +22,7 @@ public class SecondTimer {
     private String address;
     private String phoneNumber;
     private LocalDate visitationDate;
+    private int visitMonth;
     private String area;
     private Long cellId;
     private String cellName;

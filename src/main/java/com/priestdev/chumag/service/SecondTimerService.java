@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,11 +21,15 @@ public class SecondTimerService {
     public ResponseEntity<StandardResponse> createSecondTimer(SecondTimer secondTimer) {
         try {
             Optional<SecondTimer> secondTime = secondTimerRepo.findByPhoneNumber(secondTimer.getPhoneNumber());
-            if(secondTime.isPresent()){
+            if (secondTime.isPresent()) {
+                LocalDate localDate = LocalDate.now();
+                secondTimer.setVisitMonth(localDate.getMonthValue());
                 return StandardResponse.sendHttpResponse(false, "Second timer already recorded");
-            } else return StandardResponse.sendHttpResponse(true, "Successful", secondTimerRepo.save(secondTimer));
+            } else
+                return StandardResponse.sendHttpResponse(true, "Successful", secondTimerRepo.save(secondTimer));
         } catch (Exception e) {
-            return StandardResponse.sendHttpResponse(false, "Could not create first timer record");
+            System.out.println(e.getMessage());
+            return StandardResponse.sendHttpResponse(false, "Could not create second timer record");
         }
     }
 
@@ -49,8 +54,8 @@ public class SecondTimerService {
     public ResponseEntity<StandardResponse> getSecondTimerByName(String name) {
         try {
             List<SecondTimer> allSecondTimers = secondTimerRepo.findAll();
-            for(SecondTimer second: allSecondTimers){
-                if(second.getFirstName().equalsIgnoreCase(name) || second.getLastName().equalsIgnoreCase(name)){
+            for (SecondTimer second : allSecondTimers) {
+                if (second.getFirstName().equalsIgnoreCase(name) || second.getLastName().equalsIgnoreCase(name)) {
                     return StandardResponse.sendHttpResponse(true, "Successful", second);
                 }
             }
