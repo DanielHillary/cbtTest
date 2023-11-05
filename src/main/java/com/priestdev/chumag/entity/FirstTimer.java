@@ -36,6 +36,7 @@ public class FirstTimer {
     private String occupation;
     private String ageRange;
     private LocalDate firstVisitDate;
+    private int visitMonth;
     private boolean forDCA;
     private boolean forShopForFree;
     private boolean forEncounter;

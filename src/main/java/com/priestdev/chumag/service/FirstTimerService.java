@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +29,9 @@ public class FirstTimerService {
                     message = "First timer already recorded.";
                 }
                 return StandardResponse.sendHttpResponse(false, message);
-            }else {
+            } else {
+                LocalDate localDate = LocalDate.now();
+                firstTimer.setVisitMonth(localDate.getMonthValue());
                 firstTimer.setChurchAttendance(1);
                 return StandardResponse.sendHttpResponse(true, "Successful", firstTimerRepo.save(firstTimer));
             }
@@ -58,8 +61,8 @@ public class FirstTimerService {
     public ResponseEntity<StandardResponse> getFirstTimerByName(String name) {
         try {
             List<FirstTimer> allFirstTimers = firstTimerRepo.findAll();
-            for(FirstTimer first : allFirstTimers){
-                if(first.getFirstName().equalsIgnoreCase(name) || first.getLastName().equalsIgnoreCase(name)){
+            for (FirstTimer first : allFirstTimers) {
+                if (first.getFirstName().equalsIgnoreCase(name) || first.getLastName().equalsIgnoreCase(name)) {
                     return StandardResponse.sendHttpResponse(true, "Successful", first);
 
                 }
