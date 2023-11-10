@@ -56,7 +56,7 @@ public class AdminService {
                 user.setLastName(adminUser.getLastName());
                 user.setUserId(adminUser.getUserId());
                 user.setRole(adminUser.getRole());
-                user.setTag("Admin");
+                user.setAccountType("Admin");
                 user.setPassword(passwordEncoder.encode(adminUser.getPassword()));
 
                 NService.sendNotificationOTP(user, "Thank you for signing up. <br /> Use the following OTP to Validate your email <strong> " + vOtp + "</strong>" );

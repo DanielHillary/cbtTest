@@ -21,7 +21,7 @@ public class User {
     private String firstName;
     private String phoneNumber;
 
-    private String tag;
+    private String accountType;
     private String verificationOtp;
     private String oneTimePassword;
     private Date otpRequestTime;
@@ -45,14 +45,6 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 
     public String getUserName() {

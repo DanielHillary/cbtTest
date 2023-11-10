@@ -1,6 +1,7 @@
 package com.priestdev.chumag.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.Entity;
@@ -8,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDate;
+
 
 @Entity
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class SecondTimer {
     private String address;
     private String phoneNumber;
     private LocalDate visitationDate;
+    private int visitMonth;
     private String area;
     private Long cellId;
     private String cellName;
@@ -37,6 +40,18 @@ public class SecondTimer {
     private boolean likedTheChurch;
     private String comments;
     private boolean willReturnAgain;
-    private String mostEnjoyedSession;
-    private String howDidYouHearAboutUs;
+
+    public SecondTimer(FirstTimer firstTimer){
+        this.address = firstTimer.getAddress();
+        this.firstName = firstTimer.getFirstName();
+        this.email = firstTimer.getEmailAddress();
+        this.cellId = firstTimer.getCellId();
+        this.cellName = firstTimer.getCellName();
+        this.ageRange = firstTimer.getAgeRange();
+        this.cellAddress = firstTimer.getCellAddress();
+        this.phoneNumber = firstTimer.getPhoneNumber();
+        this.zoneId = firstTimer.getZoneId();
+        this.area = firstTimer.getArea();
+        this.zoneName = firstTimer.getZoneName();
+    }
 }

@@ -33,9 +33,11 @@ public class FirstTimer {
     private String prayerRequest;
     private Long cellId;
     private String cellName;
+    private String cellAddress;
     private String occupation;
     private String ageRange;
     private LocalDate firstVisitDate;
+    private int visitMonth;
     private boolean forDCA;
     private boolean forShopForFree;
     private boolean forEncounter;

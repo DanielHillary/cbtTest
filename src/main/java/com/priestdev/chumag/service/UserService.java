@@ -133,7 +133,7 @@ public class UserService {
                 user.setUserId(String.format("%04d", customerRand.nextInt(10000)));
                 user.setVerificationOtp(vOtp);
                 user.setRole(roles);
-                user.setTag("User");
+                user.setAccountType("User");
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
 
 

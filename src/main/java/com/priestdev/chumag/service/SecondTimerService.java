@@ -3,6 +3,7 @@ package com.priestdev.chumag.service;
 import com.priestdev.chumag.entity.FirstTimer;
 import com.priestdev.chumag.entity.SecondTimer;
 import com.priestdev.chumag.entity.StandardResponse;
+import com.priestdev.chumag.repository.FirstTimerRepo;
 import com.priestdev.chumag.repository.SecondTimerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,8 @@ public class SecondTimerService {
 
     @Autowired
     private SecondTimerRepo secondTimerRepo;
+    @Autowired
+    private FirstTimerRepo firstTimerRepo;
 
     public ResponseEntity<StandardResponse> createSecondTimer(SecondTimer secondTimer) {
         try {
@@ -83,6 +86,21 @@ public class SecondTimerService {
             return StandardResponse.sendHttpResponse(true, "Successfully deleted");
         } catch (Exception e) {
             return StandardResponse.sendHttpResponse(false, "Could not delete user");
+        }
+    }
+
+    public ResponseEntity<StandardResponse> migrateToSecondTimer(String phoneNumber, String firstName) {
+        try {
+            Optional<FirstTimer> firstTimer = firstTimerRepo.findByPhoneNumberAndFirstName(phoneNumber, firstName);
+            if(firstTimer.isEmpty()){
+                return StandardResponse.sendHttpResponse(false,"This person hasn't been to church before. Kindly register as First Timer");
+            }else {
+                SecondTimer secondTimer = new SecondTimer(firstTimer.get());
+                secondTimerRepo.save(secondTimer);
+                return StandardResponse.sendHttpResponse(true, "Successfully migrated", secondTimerRepo.save(secondTimer));
+            }
+        } catch (Exception e) {
+            return StandardResponse.sendHttpResponse(false, "Something went wrong.");
         }
     }
 }

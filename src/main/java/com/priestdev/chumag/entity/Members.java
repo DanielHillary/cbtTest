@@ -21,7 +21,13 @@ public class Members implements Comparable<Members>{
     private String lastName;
     private String address;
     private int age;
+    private LocalDate dateOfBirth;
     private String phoneNumber;
+    private Long cellId;
+    private String cellName;
+    private String cellAddress;
+    private Long zoneId;
+    private String zoneName;
     private LocalDate membershipDate;
     private LocalDate firstTimeVisit;
     private boolean hasCompletedDCA;

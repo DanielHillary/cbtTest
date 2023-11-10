@@ -20,6 +20,12 @@ public class SecondTimerController {
         return secondTimerService.createSecondTimer(secondTimer);
     }
 
+    @PostMapping("/migratetosecondtimer")
+    public ResponseEntity<StandardResponse> registerSecondTimer(@RequestParam("phoneNumber") String phoneNumber,
+                                                                @RequestParam("firstName") String firstName){
+        return secondTimerService.migrateToSecondTimer(phoneNumber, firstName);
+    }
+
     @GetMapping("/getallsecondtimers")
     public ResponseEntity<StandardResponse> getAllSecondTimers(){
         return secondTimerService.getAllSecondTimers();
