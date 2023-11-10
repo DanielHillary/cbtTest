@@ -19,6 +19,7 @@ public class NewConverts {
     private String phoneNumber;
     private LocalDate dateOfConversion;
     private String conversionMonth;
+    private String mostEnjoyedSession;
     private Long cellId;
     private String cellName;
     private Long zoneId;
