@@ -25,9 +25,14 @@ public class ReportController {
     }
 
     @GetMapping("/generateweeklyreportbymonth")
-    public ResponseEntity<StandardResponse> generateWeeklyReportByMonth(@RequestParam("month") String month,
+    public ResponseEntity<StandardResponse> generateWeeklyReportByMonth(@RequestParam("month") String month){
+        return reportingService.generateWeeklyReportByMonth(month);
+    }
+
+    @GetMapping("/generateweeklyreportbymonthandyear")
+    public ResponseEntity<StandardResponse> generateWeeklyReportByMonthAndYear(@RequestParam("month") String month,
                                                                         @RequestParam("year") int year){
-        return reportingService.generateWeeklyReportByMonth(month, year);
+        return reportingService.generateWeeklyReportByMonthAndYear(month, year);
     }
 
     @GetMapping("/generatemonthlyreport")

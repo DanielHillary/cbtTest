@@ -28,8 +28,11 @@ public class SecondTimerService {
                 LocalDate localDate = LocalDate.now();
                 secondTimer.setVisitMonth(localDate.getMonthValue());
                 return StandardResponse.sendHttpResponse(false, "Second timer already recorded");
-            } else
+            } else {
+                LocalDate localDate = LocalDate.now();
+                secondTimer.setVisitMonth(localDate.getMonthValue());
                 return StandardResponse.sendHttpResponse(true, "Successful", secondTimerRepo.save(secondTimer));
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return StandardResponse.sendHttpResponse(false, "Could not create second timer record");

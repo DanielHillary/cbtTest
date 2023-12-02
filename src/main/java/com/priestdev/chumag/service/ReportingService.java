@@ -34,10 +34,26 @@ public class ReportingService {
         try {
             LocalDate date = LocalDate.now();
             int year = LocalDate.now().getYear();
-            int monthInt = date.getDayOfMonth();
+            int monthInt = date.getMonthValue();
 
-            List<FirstTimer> firstTimers = firstTimerRepo.findByVisitMonth(monthInt);
-            List<SecondTimer> secondTimers = secondTimerRepo.findByVisitMonth(monthInt);
+//            List<FirstTimer> firstTimers = firstTimerRepo.findByVisitMonth(monthInt);
+//            List<SecondTimer> secondTimers = secondTimerRepo.findByVisitMonth(monthInt);
+
+            List<FirstTimer> firstTimerList = new ArrayList<>();
+            List<FirstTimer> allFirstTimers = firstTimerRepo.findAll();
+            for( FirstTimer timers : allFirstTimers){
+                if(monthInt == timers.getFirstVisitDate().getMonthValue()){
+                    firstTimerList.add(timers);
+                }
+            }
+
+            List<SecondTimer> secondTimerList = new ArrayList<>();
+            List<SecondTimer> allSecondTimers = secondTimerRepo.findAll();
+            for( SecondTimer timers : allSecondTimers){
+                if(monthInt == timers.getVisitationDate().getMonthValue()){
+                    secondTimerList.add(timers);
+                }
+            }
             List<ZonalLeader> zonalLeaders = zonalLeaderRepo.findAll();
             List<CellLeader> cellLeaders = cellLeaderRepo.findAll();
 
@@ -51,15 +67,15 @@ public class ReportingService {
                 for(CellLeader leaders: cellLeaders) {
                     CellWeeklyReport fandS = new CellWeeklyReport();
                     fandS.setSunday(localDate);
-                    for (FirstTimer timer : firstTimers) {
+                    for (FirstTimer timer : firstTimerList) {
                         if (leaders.getId().compareTo(timer.getCellId()) == 0 || localDate.isEqual(timer.getFirstVisitDate())) {
                             fandS.setFirstTimers(fandS.getFirstTimers() + 1);
                         }
 
                     }
-                    for (SecondTimer timer : secondTimers) {
+                    for (SecondTimer timer : secondTimerList) {
                         if (timer.getCellId().compareTo(leaders.getId()) == 0 || localDate.isEqual(timer.getVisitationDate())) {
-                            fandS.setFirstTimers(fandS.getFirstTimers() + 1);
+                            fandS.setSecondTimers(fandS.getSecondTimers() + 1);
                         }
                     }
                     fandS.setTotalFirstAndSecondTimers(fandS.getFirstTimers() + fandS.getSecondTimers());
@@ -75,23 +91,24 @@ public class ReportingService {
                 cellReporting.setMonthlyTarget(monthlyTarget);
                 cellReporting.setWeeklyTarget(weeklyTarget);
                 cellReporting.setCellLeader(leader);
-                for (FirstTimer timer : firstTimers) {
+                for (FirstTimer timer : firstTimerList) {
                     if (timer.getCellAddress().equalsIgnoreCase(leader.getCellAddress())
                             && Objects.equals(timer.getCellId(), leader.getId())){
                         cellReporting.setMonthlyTotalFirstTimers(cellReporting.getMonthlyTotalFirstTimers() + 1);
                     }
 
                 }
-                for (SecondTimer second : secondTimers) {
+                for (SecondTimer second : secondTimerList) {
                     if (second.getCellName().equalsIgnoreCase(leader.getFirstName())
                             && Objects.equals(second.getCellId(), leader.getId())){
                         cellReporting.setMonthlyTotalSecondTimers(cellReporting.getMonthlyTotalSecondTimers() + 1);
                     }
                 }
                 int monthly = 0;
+                List<CellWeeklyReport> weeklyReports = new ArrayList<>();
                 for (CellWeeklyReport fandS: weeklyFandS){
                     if(fandS.getCellId().compareTo(leader.getId()) == 0){
-                        cellReporting.getWeeklyFandS().add(fandS);
+                        weeklyReports.add(fandS);
                         cellReporting.setWeeklyTotalFirstAndSecondTimers(cellReporting.getWeeklyTotalFirstAndSecondTimers() + fandS.getTotalFirstAndSecondTimers());
                         cellReporting.setWeeklyTotalFirstTimers(cellReporting.getWeeklyTotalFirstTimers() + fandS.getFirstTimers());
                         cellReporting.setWeeklyTotalSecondTimers(cellReporting.getWeeklyTotalSecondTimers() + fandS.getSecondTimers());
@@ -99,6 +116,7 @@ public class ReportingService {
                     }
                 }
                 cellReporting.setMonthlyTotalFirstAndSecondTimer(monthly);
+                cellReporting.setWeeklyFandS(weeklyReports);
                 cellReports.add(cellReporting);
             }
 
@@ -108,12 +126,14 @@ public class ReportingService {
             do {
                 Reporting report = new Reporting();
                 report.setSunday(sundays.get(sundaySize));
+                List<ZoneReporting> reportingList = new ArrayList<>();
                 for (ZonalLeader leader : zonalLeaders) {
                     ZoneReporting reporting = new ZoneReporting();
                     reporting.setZonalLeader(leader);
+                    List<CellReporting> cellLeaderList = new ArrayList<>();
                     for (CellReporting cellReporting : cellReports) {
                         if (cellReporting.getCellLeader().getZoneId().compareTo(leader.getId()) == 0) {
-                            reporting.getCellLeaders().add(cellReporting);
+                            cellLeaderList.add(cellReporting);
                             reporting.setNumberOfCells(reporting.getNumberOfCells() + 1);
                             reporting.setTotalWeeklyFirstTimer(reporting.getTotalWeeklyFirstTimer() + cellReporting.getWeeklyTotalFirstTimers());
                             reporting.setTotalWeeklySecondTimer(reporting.getTotalWeeklySecondTimer() + cellReporting.getWeeklyTotalSecondTimers());
@@ -123,7 +143,9 @@ public class ReportingService {
                             reporting.setTotalMonthlyFirstAndSecondTimer(reporting.getTotalMonthlyFirstAndSecondTimer() + cellReporting.getMonthlyTotalFirstAndSecondTimer());
                         }
                     }
-                    report.getZoneReports().add(reporting);
+                    reporting.setCellLeaders(cellLeaderList);
+                    reportingList.add(reporting);
+                    report.setZoneReports(reportingList);
                 }
                 sundayReports.add(report);
                 sundaySize = sundaySize + 1;
@@ -131,39 +153,58 @@ public class ReportingService {
 
             return StandardResponse.sendHttpResponse(true, "Successful", sundayReports);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return StandardResponse.sendHttpResponse(false, "Something went wrong");
         }
     }
 
-    public ResponseEntity<StandardResponse> generateWeeklyReportByMonth(String month, int year){
+    public ResponseEntity<StandardResponse> generateWeeklyReportByMonth(String month){
+
         try {
-
             int monthInt = Month.valueOf(month.toUpperCase()).getValue();
+            LocalDate date = LocalDate.now();
+            int year = LocalDate.now().getYear();
 
-            List<FirstTimer> firstTimers = firstTimerRepo.findByVisitMonth(monthInt);
-            List<SecondTimer> secondTimers = secondTimerRepo.findByVisitMonth(monthInt);
+//            List<FirstTimer> firstTimers = firstTimerRepo.findByVisitMonth(monthInt);
+//            List<SecondTimer> secondTimers = secondTimerRepo.findByVisitMonth(monthInt);
+
+            List<FirstTimer> firstTimerList = new ArrayList<>();
+            List<FirstTimer> allFirstTimers = firstTimerRepo.findAll();
+            for( FirstTimer timers : allFirstTimers){
+                if(monthInt == timers.getFirstVisitDate().getMonthValue()){
+                    firstTimerList.add(timers);
+                }
+            }
+
+            List<SecondTimer> secondTimerList = new ArrayList<>();
+            List<SecondTimer> allSecondTimers = secondTimerRepo.findAll();
+            for( SecondTimer timers : allSecondTimers){
+                if(monthInt == timers.getVisitationDate().getMonthValue()){
+                    secondTimerList.add(timers);
+                }
+            }
             List<ZonalLeader> zonalLeaders = zonalLeaderRepo.findAll();
             List<CellLeader> cellLeaders = cellLeaderRepo.findAll();
 
             List<CellReporting> cellReports = new ArrayList<>();
             List<CellWeeklyReport> weeklyFandS = new ArrayList<>();
 
-            List<LocalDate> sundays = findSundays(year, monthInt);
+            List<LocalDate> sundays = findSundays(date.getYear(), date.getMonthValue());
 
 
             for(LocalDate localDate: sundays){
                 for(CellLeader leaders: cellLeaders) {
                     CellWeeklyReport fandS = new CellWeeklyReport();
                     fandS.setSunday(localDate);
-                    for (FirstTimer timer : firstTimers) {
+                    for (FirstTimer timer : firstTimerList) {
                         if (leaders.getId().compareTo(timer.getCellId()) == 0 || localDate.isEqual(timer.getFirstVisitDate())) {
                             fandS.setFirstTimers(fandS.getFirstTimers() + 1);
                         }
 
                     }
-                    for (SecondTimer timer : secondTimers) {
+                    for (SecondTimer timer : secondTimerList) {
                         if (timer.getCellId().compareTo(leaders.getId()) == 0 || localDate.isEqual(timer.getVisitationDate())) {
-                            fandS.setFirstTimers(fandS.getFirstTimers() + 1);
+                            fandS.setSecondTimers(fandS.getSecondTimers() + 1);
                         }
                     }
                     fandS.setTotalFirstAndSecondTimers(fandS.getFirstTimers() + fandS.getSecondTimers());
@@ -179,24 +220,24 @@ public class ReportingService {
                 cellReporting.setMonthlyTarget(monthlyTarget);
                 cellReporting.setWeeklyTarget(weeklyTarget);
                 cellReporting.setCellLeader(leader);
-                for (FirstTimer timer : firstTimers) {
+                for (FirstTimer timer : firstTimerList) {
                     if (timer.getCellAddress().equalsIgnoreCase(leader.getCellAddress())
                             && Objects.equals(timer.getCellId(), leader.getId())){
                         cellReporting.setMonthlyTotalFirstTimers(cellReporting.getMonthlyTotalFirstTimers() + 1);
                     }
 
                 }
-                for (SecondTimer second : secondTimers) {
+                for (SecondTimer second : secondTimerList) {
                     if (second.getCellName().equalsIgnoreCase(leader.getFirstName())
                             && Objects.equals(second.getCellId(), leader.getId())){
                         cellReporting.setMonthlyTotalSecondTimers(cellReporting.getMonthlyTotalSecondTimers() + 1);
                     }
                 }
-                //I AM HOPING!
                 int monthly = 0;
+                List<CellWeeklyReport> weeklyReports = new ArrayList<>();
                 for (CellWeeklyReport fandS: weeklyFandS){
                     if(fandS.getCellId().compareTo(leader.getId()) == 0){
-                        cellReporting.getWeeklyFandS().add(fandS);
+                        weeklyReports.add(fandS);
                         cellReporting.setWeeklyTotalFirstAndSecondTimers(cellReporting.getWeeklyTotalFirstAndSecondTimers() + fandS.getTotalFirstAndSecondTimers());
                         cellReporting.setWeeklyTotalFirstTimers(cellReporting.getWeeklyTotalFirstTimers() + fandS.getFirstTimers());
                         cellReporting.setWeeklyTotalSecondTimers(cellReporting.getWeeklyTotalSecondTimers() + fandS.getSecondTimers());
@@ -204,6 +245,7 @@ public class ReportingService {
                     }
                 }
                 cellReporting.setMonthlyTotalFirstAndSecondTimer(monthly);
+                cellReporting.setWeeklyFandS(weeklyReports);
                 cellReports.add(cellReporting);
             }
 
@@ -213,12 +255,14 @@ public class ReportingService {
             do {
                 Reporting report = new Reporting();
                 report.setSunday(sundays.get(sundaySize));
+                List<ZoneReporting> reportingList = new ArrayList<>();
                 for (ZonalLeader leader : zonalLeaders) {
                     ZoneReporting reporting = new ZoneReporting();
                     reporting.setZonalLeader(leader);
+                    List<CellReporting> cellLeaderList = new ArrayList<>();
                     for (CellReporting cellReporting : cellReports) {
                         if (cellReporting.getCellLeader().getZoneId().compareTo(leader.getId()) == 0) {
-                            reporting.getCellLeaders().add(cellReporting);
+                            cellLeaderList.add(cellReporting);
                             reporting.setNumberOfCells(reporting.getNumberOfCells() + 1);
                             reporting.setTotalWeeklyFirstTimer(reporting.getTotalWeeklyFirstTimer() + cellReporting.getWeeklyTotalFirstTimers());
                             reporting.setTotalWeeklySecondTimer(reporting.getTotalWeeklySecondTimer() + cellReporting.getWeeklyTotalSecondTimers());
@@ -228,7 +272,9 @@ public class ReportingService {
                             reporting.setTotalMonthlyFirstAndSecondTimer(reporting.getTotalMonthlyFirstAndSecondTimer() + cellReporting.getMonthlyTotalFirstAndSecondTimer());
                         }
                     }
-                    report.getZoneReports().add(reporting);
+                    reporting.setCellLeaders(cellLeaderList);
+                    reportingList.add(reporting);
+                    report.setZoneReports(reportingList);
                 }
                 sundayReports.add(report);
                 sundaySize = sundaySize + 1;
@@ -236,9 +282,138 @@ public class ReportingService {
 
             return StandardResponse.sendHttpResponse(true, "Successful", sundayReports);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return StandardResponse.sendHttpResponse(false, "Something went wrong");
         }
     }
+
+
+    public ResponseEntity<StandardResponse> generateWeeklyReportByMonthAndYear(String month, int year){
+
+        try {
+            int monthInt = Month.valueOf(month.toUpperCase()).getValue();
+            LocalDate date = LocalDate.now();
+
+//            List<FirstTimer> firstTimers = firstTimerRepo.findByVisitMonth(monthInt);
+            List<FirstTimer> firstTimerList = new ArrayList<>();
+            List<FirstTimer> allFirstTimers = firstTimerRepo.findAll();
+            for( FirstTimer timers : allFirstTimers){
+                if(monthInt == timers.getFirstVisitDate().getMonthValue()){
+                    firstTimerList.add(timers);
+                }
+            }
+
+            List<SecondTimer> secondTimerList = new ArrayList<>();
+            List<SecondTimer> allSecondTimers = secondTimerRepo.findAll();
+            for( SecondTimer timers : allSecondTimers){
+                if(monthInt == timers.getVisitationDate().getMonthValue()){
+                    secondTimerList.add(timers);
+                }
+            }
+            List<ZonalLeader> zonalLeaders = zonalLeaderRepo.findAll();
+            List<CellLeader> cellLeaders = cellLeaderRepo.findAll();
+
+            List<CellReporting> cellReports = new ArrayList<>();
+            List<CellWeeklyReport> weeklyFandS = new ArrayList<>();
+
+            List<LocalDate> sundays = findSundays(date.getYear(), date.getMonthValue());
+
+
+            for(LocalDate localDate: sundays){
+                for(CellLeader leaders: cellLeaders) {
+                    CellWeeklyReport fandS = new CellWeeklyReport();
+                    fandS.setSunday(localDate);
+                    for (FirstTimer timer : firstTimerList) {
+                        if (leaders.getId().compareTo(timer.getCellId()) == 0 || localDate.isEqual(timer.getFirstVisitDate())) {
+                            fandS.setFirstTimers(fandS.getFirstTimers() + 1);
+                        }
+
+                    }
+                    for (SecondTimer timer : secondTimerList) {
+                        if (timer.getCellId().compareTo(leaders.getId()) == 0 || localDate.isEqual(timer.getVisitationDate())) {
+                            fandS.setSecondTimers(fandS.getSecondTimers() + 1);
+                        }
+                    }
+                    fandS.setTotalFirstAndSecondTimers(fandS.getFirstTimers() + fandS.getSecondTimers());
+                    fandS.setCellId(leaders.getId());
+                    weeklyFandS.add(fandS);
+                }
+            }
+
+            for(CellLeader leader: cellLeaders) {
+                CellReporting cellReporting = new CellReporting();
+                int monthlyTarget = findSundays(LocalDate.now().getYear(), LocalDate.now().getMonthValue()).size();
+                monthlyTarget = monthlyTarget * 4;
+                cellReporting.setMonthlyTarget(monthlyTarget);
+                cellReporting.setWeeklyTarget(weeklyTarget);
+                cellReporting.setCellLeader(leader);
+                for (FirstTimer timer : firstTimerList) {
+                    if (timer.getCellAddress().equalsIgnoreCase(leader.getCellAddress())
+                            && Objects.equals(timer.getCellId(), leader.getId())){
+                        cellReporting.setMonthlyTotalFirstTimers(cellReporting.getMonthlyTotalFirstTimers() + 1);
+                    }
+
+                }
+                for (SecondTimer second : secondTimerList) {
+                    if (second.getCellName().equalsIgnoreCase(leader.getFirstName())
+                            && Objects.equals(second.getCellId(), leader.getId())){
+                        cellReporting.setMonthlyTotalSecondTimers(cellReporting.getMonthlyTotalSecondTimers() + 1);
+                    }
+                }
+                int monthly = 0;
+                List<CellWeeklyReport> weeklyReports = new ArrayList<>();
+                for (CellWeeklyReport fandS: weeklyFandS){
+                    if(fandS.getCellId().compareTo(leader.getId()) == 0){
+                        weeklyReports.add(fandS);
+                        cellReporting.setWeeklyTotalFirstAndSecondTimers(cellReporting.getWeeklyTotalFirstAndSecondTimers() + fandS.getTotalFirstAndSecondTimers());
+                        cellReporting.setWeeklyTotalFirstTimers(cellReporting.getWeeklyTotalFirstTimers() + fandS.getFirstTimers());
+                        cellReporting.setWeeklyTotalSecondTimers(cellReporting.getWeeklyTotalSecondTimers() + fandS.getSecondTimers());
+                        monthly = monthly + fandS.getTotalFirstAndSecondTimers();
+                    }
+                }
+                cellReporting.setMonthlyTotalFirstAndSecondTimer(monthly);
+                cellReporting.setWeeklyFandS(weeklyReports);
+                cellReports.add(cellReporting);
+            }
+
+            List<Reporting> sundayReports = new ArrayList<>();
+            int counter = findSundays(year, monthInt).size();
+            int sundaySize = 0;
+            do {
+                Reporting report = new Reporting();
+                report.setSunday(sundays.get(sundaySize));
+                List<ZoneReporting> reportingList = new ArrayList<>();
+                for (ZonalLeader leader : zonalLeaders) {
+                    ZoneReporting reporting = new ZoneReporting();
+                    reporting.setZonalLeader(leader);
+                    List<CellReporting> cellLeaderList = new ArrayList<>();
+                    for (CellReporting cellReporting : cellReports) {
+                        if (cellReporting.getCellLeader().getZoneId().compareTo(leader.getId()) == 0) {
+                            cellLeaderList.add(cellReporting);
+                            reporting.setNumberOfCells(reporting.getNumberOfCells() + 1);
+                            reporting.setTotalWeeklyFirstTimer(reporting.getTotalWeeklyFirstTimer() + cellReporting.getWeeklyTotalFirstTimers());
+                            reporting.setTotalWeeklySecondTimer(reporting.getTotalWeeklySecondTimer() + cellReporting.getWeeklyTotalSecondTimers());
+                            reporting.setTotalMonthlyFirstTimer(reporting.getTotalMonthlyFirstTimer() + cellReporting.getMonthlyTotalFirstTimers());
+                            reporting.setTotalMonthlySecondTimer(reporting.getTotalMonthlySecondTimer() + cellReporting.getMonthlyTotalSecondTimers());
+                            reporting.setTotalWeeklyFirstAndSecondTimer(reporting.getTotalWeeklyFirstAndSecondTimer() + cellReporting.getWeeklyTotalFirstAndSecondTimers());
+                            reporting.setTotalMonthlyFirstAndSecondTimer(reporting.getTotalMonthlyFirstAndSecondTimer() + cellReporting.getMonthlyTotalFirstAndSecondTimer());
+                        }
+                    }
+                    reporting.setCellLeaders(cellLeaderList);
+                    reportingList.add(reporting);
+                    report.setZoneReports(reportingList);
+                }
+                sundayReports.add(report);
+                sundaySize = sundaySize + 1;
+            } while (sundaySize < counter);
+
+            return StandardResponse.sendHttpResponse(true, "Successful", sundayReports);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return StandardResponse.sendHttpResponse(false, "Something went wrong");
+        }
+    }
+
 
     public ResponseEntity<StandardResponse> generateMonthlyReportByYear(int year){
         try {
@@ -250,8 +425,6 @@ public class ReportingService {
 
             List<CellReporting> cellReports = new ArrayList<>();
             List<CellMonthlyReport> monthlyFandS = new ArrayList<>();
-
-
 
             for(int month = 1; month<13; month++){
                 for(CellLeader leaders: cellLeaders) {
@@ -296,9 +469,11 @@ public class ReportingService {
                 }
                 //I AM HOPING!
                 int yearly = 0;
+                List<CellMonthlyReport> monthlyReportList = new ArrayList<>();
                 for (CellMonthlyReport fandS: monthlyFandS){
                     if(fandS.getCellId().compareTo(leader.getId()) == 0){
-                        cellReporting.getMonthlyFandS().add(fandS);
+                        monthlyReportList.add(fandS);
+//                        cellReporting.getMonthlyFandS().add(fandS);
                         cellReporting.setMonthlyTotalFirstAndSecondTimer(cellReporting.getMonthlyTotalFirstAndSecondTimer() + fandS.getTotalFirstAndSecondTimers());
                         cellReporting.setMonthlyTotalFirstTimers(cellReporting.getMonthlyTotalFirstTimers() + fandS.getFirstTimers());
                         cellReporting.setMonthlyTotalSecondTimers(cellReporting.getMonthlyTotalSecondTimers() + fandS.getSecondTimers());
@@ -306,22 +481,26 @@ public class ReportingService {
                     }
                 }
                 cellReporting.setYearlyTotalFirstAndSecondTimer(yearly);
+                cellReporting.setMonthlyFandS(monthlyReportList);
                 cellReports.add(cellReporting);
             }
 
             List<Reporting> monthlyReports = new ArrayList<>();
             int counter = 13;
-            int monthSize = 0;
+            int monthSize = 1;
             do {
                 Reporting report = new Reporting();
                 report.setMonth(monthSize);
-                //convert from int to month value
+                report.setMonthName(Month.of(monthSize).toString());
+                List<ZoneReporting> reportingList = new ArrayList<>();
                 for (ZonalLeader leader : zonalLeaders) {
                     ZoneReporting reporting = new ZoneReporting();
                     reporting.setZonalLeader(leader);
+                    List<CellReporting> cellReportingList = new ArrayList<>();
                     for (CellReporting cellReporting : cellReports) {
                         if (cellReporting.getCellLeader().getZoneId().compareTo(leader.getId()) == 0) {
-                            reporting.getCellLeaders().add(cellReporting);
+//                            reporting.getCellLeaders().add(cellReporting);
+                            cellReportingList.add(cellReporting);
                             reporting.setNumberOfCells(reporting.getNumberOfCells() + 1);
                             reporting.setTotalYearlyFirstTimer(reporting.getTotalYearlyFirstTimer() + cellReporting.getYearlyTotalFirstTimers());
                             reporting.setTotalYearlySecondTimer(reporting.getTotalYearlySecondTimer() + cellReporting.getYearlyTotalSecondTimers());
@@ -331,7 +510,9 @@ public class ReportingService {
                             reporting.setTotalMonthlyFirstAndSecondTimer(reporting.getTotalMonthlyFirstAndSecondTimer() + cellReporting.getMonthlyTotalFirstAndSecondTimer());
                         }
                     }
-                    report.getZoneReports().add(reporting);
+                    reporting.setCellLeaders(cellReportingList);
+                    reportingList.add(reporting);
+                    report.setZoneReports(reportingList);
                 }
                 monthlyReports.add(report);
                 monthSize = monthSize + 1;
@@ -353,7 +534,7 @@ public class ReportingService {
 
             for(LocalDate date : saturdays){
                 FollowUpReport followUpReport = new FollowUpReport();
-
+                List<ZonalLeaderReport> leaderReports = new ArrayList<>();
                 for(ZonalLeaderReport report : reportList){
                     if(report.getReportDate().isEqual(date)){
                         followUpReport.setLeaderFirstName(report.getFirstName());
@@ -362,9 +543,10 @@ public class ReportingService {
                         followUpReport.setTotalMonthlyCalls(followUpReport.getTotalMonthlyCalls() + report.getCalls());
                         followUpReport.setTotalMonthlyCoupons(followUpReport.getTotalMonthlyCoupons() + report.getCoupons());
 
-                        followUpReport.getReportList().add(report);
+                        leaderReports.add(report);
                     }
                 }
+                followUpReport.setReportList(leaderReports);
                 followUpReports.add(followUpReport);
             }
 

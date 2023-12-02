@@ -12,6 +12,7 @@ public class Reporting {
     private String id;
     private LocalDate sunday;
     private int month;
+    private String monthName;
     private ZonalLeader zonalLeader;
     private List<ZoneReporting> zoneReports;
 }
