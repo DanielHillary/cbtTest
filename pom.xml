@@ -8,11 +8,11 @@
         <version>2.7.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.priestdev</groupId>
-    <artifactId>Chumag</artifactId>
+    <groupId>com.jacinthsolution</groupId>
+    <artifactId>Cbt</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Chumag</name>
-    <description>Project for Membership Management</description>
+    <name>CbtInterview</name>
+    <description>Interview test project</description>
     <properties>
         <java.version>17</java.version>
     </properties>
