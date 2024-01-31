@@ -35,7 +35,7 @@ public class UserService {
     @Autowired
     private NotifyService NService;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
 
 
@@ -94,27 +94,6 @@ public class UserService {
                 adminRepository.save(user);
 
             }
-        }
-
-        if(roleRepo.findByRoleName("User").isEmpty()) {
-            Role userRole = new Role();
-            userRole.setRoleName("User");
-            userRole.setRoleDescription("Default role for newly created record");
-            roleRepo.save(userRole);
-        }
-
-        if(roleRepo.findByRoleName("Cell").isEmpty()) {
-            Role userRole = new Role();
-            userRole.setRoleName("Cell");
-            userRole.setRoleDescription("Privilege for Cell leader");
-            roleRepo.save(userRole);
-        }
-
-        if(roleRepo.findByRoleName("Zonal").isEmpty()) {
-            Role userRole = new Role();
-            userRole.setRoleName("Zonal");
-            userRole.setRoleDescription("Role for Zonal Coordinators");
-            roleRepo.save(userRole);
         }
 
     }

@@ -19,18 +19,11 @@ import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import org.jobrunr.jobs.annotations.Job;
-
-
-
-
-
 @Service
 public class SendGridEmailService {
-
-
+    
     private TemplateEngine templateEngine;
-
-
+    
     @Value("${sendGrid.api.key}")
     public String sendGridKey;
 
@@ -59,10 +52,6 @@ public class SendGridEmailService {
 
         });
     }
-
-
-
-
     @Job(name="Send Email Via SendGrid", retries=2)
     public void sendGridEmail(String subject, String recipient, String name,  String personlizeString, String template, Context context) {
 

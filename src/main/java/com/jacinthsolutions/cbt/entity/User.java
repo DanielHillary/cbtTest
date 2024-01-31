@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Entity
 @Data
-public class User {
+public class User extends Auditable<String>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -17,9 +17,6 @@ import org.jobrunr.scheduling.JobScheduler;
 
 import com.jacinthsolutions.cbt.entity.User;
 
-
-
-
 @Service
 public class NotifyService {
 
